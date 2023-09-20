@@ -25,11 +25,10 @@ GenericTileOffsets::GenericTileOffsets(size_t nfields)
 }
 
 Footer::Footer(Reader& reader, size_t nfields)
-  : file_sizes_(nfields)
-  , file_var_sizes_(nfields)
-  , file_validity_sizes_(nfields)
-  , gt_offsets_(nfields)
-{
+    : file_sizes_(nfields)
+    , file_var_sizes_(nfields)
+    , file_validity_sizes_(nfields)
+    , gt_offsets_(nfields) {
   reader.read(&footer_size_, 8, reader.file_size_ - 8);
   footer_offset_ = reader.file_size_ - footer_size_ - 8;
 
@@ -69,13 +68,13 @@ Footer::Footer(Reader& reader, size_t nfields)
   dser.read(&gt_offsets_.tile_min_offsets_[0], nfields * sizeof(uint64_t));
   dser.read(&gt_offsets_.tile_max_offsets_[0], nfields * sizeof(uint64_t));
   dser.read(&gt_offsets_.tile_sum_offsets_[0], nfields * sizeof(uint64_t));
-  dser.read(&gt_offsets_.tile_null_count_offsets_[0], nfields * sizeof(uint64_t));
+  dser.read(
+      &gt_offsets_.tile_null_count_offsets_[0], nfields * sizeof(uint64_t));
   gt_offsets_.fragment_min_max_sum_null_count_offset_ = dser.read<uint64_t>();
   gt_offsets_.processed_conditions_offsets_ = dser.read<uint64_t>();
 }
 
-void
-Footer::dump() {
+void Footer::dump() {
   fprintf(stderr, "File size: %llu\n", fragment_metadata_file_size_);
   fprintf(stderr, "Footer:\n");
   fprintf(stderr, "    Size: %llu\n", footer_size_);
@@ -111,34 +110,53 @@ Footer::dump() {
   }
   fprintf(stderr, "        Tile Var Offsets:\n");
   for (size_t i = 0; i < gt_offsets_.tile_var_offsets_.size(); i++) {
-    fprintf(stderr, "            %lu: %llu\n", i, gt_offsets_.tile_var_offsets_[i]);
+    fprintf(
+        stderr, "            %lu: %llu\n", i, gt_offsets_.tile_var_offsets_[i]);
   }
   fprintf(stderr, "        Tile Var Sizes:\n");
   for (size_t i = 0; i < gt_offsets_.tile_var_sizes_.size(); i++) {
-    fprintf(stderr, "            %lu: %llu\n", i, gt_offsets_.tile_var_sizes_[i]);
+    fprintf(
+        stderr, "            %lu: %llu\n", i, gt_offsets_.tile_var_sizes_[i]);
   }
   fprintf(stderr, "        Tile Validity Offsets:\n");
   for (size_t i = 0; i < gt_offsets_.tile_validity_offsets_.size(); i++) {
-    fprintf(stderr, "            %lu: %llu\n", i, gt_offsets_.tile_validity_offsets_[i]);
+    fprintf(
+        stderr,
+        "            %lu: %llu\n",
+        i,
+        gt_offsets_.tile_validity_offsets_[i]);
   }
   fprintf(stderr, "        Tile Min Offsets:\n");
   for (size_t i = 0; i < gt_offsets_.tile_min_offsets_.size(); i++) {
-    fprintf(stderr, "            %lu: %llu\n", i, gt_offsets_.tile_min_offsets_[i]);
+    fprintf(
+        stderr, "            %lu: %llu\n", i, gt_offsets_.tile_min_offsets_[i]);
   }
   fprintf(stderr, "        Tile Max Offsets:\n");
   for (size_t i = 0; i < gt_offsets_.tile_max_offsets_.size(); i++) {
-    fprintf(stderr, "            %lu: %llu\n", i, gt_offsets_.tile_max_offsets_[i]);
+    fprintf(
+        stderr, "            %lu: %llu\n", i, gt_offsets_.tile_max_offsets_[i]);
   }
   fprintf(stderr, "        Tile Sum Offsets:\n");
   for (size_t i = 0; i < gt_offsets_.tile_sum_offsets_.size(); i++) {
-    fprintf(stderr, "            %lu: %llu\n", i, gt_offsets_.tile_sum_offsets_[i]);
+    fprintf(
+        stderr, "            %lu: %llu\n", i, gt_offsets_.tile_sum_offsets_[i]);
   }
   fprintf(stderr, "        Tile Null Count Offsets:\n");
   for (size_t i = 0; i < gt_offsets_.tile_null_count_offsets_.size(); i++) {
-    fprintf(stderr, "            %lu: %llu\n", i, gt_offsets_.tile_null_count_offsets_[i]);
+    fprintf(
+        stderr,
+        "            %lu: %llu\n",
+        i,
+        gt_offsets_.tile_null_count_offsets_[i]);
   }
-  fprintf(stderr, "        Fragment Min/Max/Sum/Null Count Offset: %llu\n", gt_offsets_.fragment_min_max_sum_null_count_offset_);
-  fprintf(stderr, "        Processed Conditions Offsets: %llu\n", gt_offsets_.processed_conditions_offsets_);
+  fprintf(
+      stderr,
+      "        Fragment Min/Max/Sum/Null Count Offset: %llu\n",
+      gt_offsets_.fragment_min_max_sum_null_count_offset_);
+  fprintf(
+      stderr,
+      "        Processed Conditions Offsets: %llu\n",
+      gt_offsets_.processed_conditions_offsets_);
 }
 
 FragmentMetadata::FragmentMetadata(Reader& reader, size_t nfields)
@@ -158,47 +176,67 @@ FragmentMetadata::FragmentMetadata(Reader& reader, size_t nfields)
     , fragment_max_(nfields)
     , fragment_sum_(nfields)
     , fragment_null_count_(nfields) {
-
   rtree_tile_ = read_tile(reader, footer_.gt_offsets_.rtree_);
 
   for (size_t i = 0; i < footer_.gt_offsets_.tile_offsets_.size(); i++) {
-    load_offsets(reader, footer_.gt_offsets_.tile_offsets_[i], tile_offsets_[i]);
+    load_offsets(
+        reader, footer_.gt_offsets_.tile_offsets_[i], tile_offsets_[i]);
   }
 
   for (size_t i = 0; i < footer_.gt_offsets_.tile_var_offsets_.size(); i++) {
-    load_offsets(reader, footer_.gt_offsets_.tile_var_offsets_[i], tile_var_offsets_[i]);
+    load_offsets(
+        reader, footer_.gt_offsets_.tile_var_offsets_[i], tile_var_offsets_[i]);
   }
 
   for (size_t i = 0; i < footer_.gt_offsets_.tile_var_sizes_.size(); i++) {
-    load_offsets(reader, footer_.gt_offsets_.tile_var_sizes_[i], tile_var_sizes_[i]);
+    load_offsets(
+        reader, footer_.gt_offsets_.tile_var_sizes_[i], tile_var_sizes_[i]);
   }
 
-  for (size_t i = 0; i < footer_.gt_offsets_.tile_validity_offsets_.size(); i++) {
-    load_offsets(reader, footer_.gt_offsets_.tile_validity_offsets_[i], tile_validity_offsets_[i]);
+  for (size_t i = 0; i < footer_.gt_offsets_.tile_validity_offsets_.size();
+       i++) {
+    load_offsets(
+        reader,
+        footer_.gt_offsets_.tile_validity_offsets_[i],
+        tile_validity_offsets_[i]);
   }
 
   for (size_t i = 0; i < footer_.gt_offsets_.tile_min_offsets_.size(); i++) {
-    load_values(reader, footer_.gt_offsets_.tile_min_offsets_[i], tile_min_[i], tile_min_var_[i]);
+    load_values(
+        reader,
+        footer_.gt_offsets_.tile_min_offsets_[i],
+        tile_min_[i],
+        tile_min_var_[i]);
   }
 
   for (size_t i = 0; i < footer_.gt_offsets_.tile_max_offsets_.size(); i++) {
-    load_values(reader, footer_.gt_offsets_.tile_max_offsets_[i], tile_max_[i], tile_max_var_[i]);
+    load_values(
+        reader,
+        footer_.gt_offsets_.tile_max_offsets_[i],
+        tile_max_[i],
+        tile_max_var_[i]);
   }
 
   for (size_t i = 0; i < footer_.gt_offsets_.tile_sum_offsets_.size(); i++) {
     load_sums(reader, footer_.gt_offsets_.tile_sum_offsets_[i], tile_sum_[i]);
   }
 
-  for (size_t i = 0; i < footer_.gt_offsets_.tile_null_count_offsets_.size(); i++) {
-    load_null_counts(reader, footer_.gt_offsets_.tile_null_count_offsets_[i], tile_null_count_[i]);
+  for (size_t i = 0; i < footer_.gt_offsets_.tile_null_count_offsets_.size();
+       i++) {
+    load_null_counts(
+        reader,
+        footer_.gt_offsets_.tile_null_count_offsets_[i],
+        tile_null_count_[i]);
   }
 
-  load_fragment_min_max_sum_null_count(reader, footer_.gt_offsets_.fragment_min_max_sum_null_count_offset_);
-  processed_conditions_tile_ = read_tile(reader, footer_.gt_offsets_.processed_conditions_offsets_);
+  load_fragment_min_max_sum_null_count(
+      reader, footer_.gt_offsets_.fragment_min_max_sum_null_count_offset_);
+  processed_conditions_tile_ =
+      read_tile(reader, footer_.gt_offsets_.processed_conditions_offsets_);
 }
 
-void
-FragmentMetadata::load_offsets(Reader& reader, uint64_t offset, std::vector<uint64_t>& dst) {
+void FragmentMetadata::load_offsets(
+    Reader& reader, uint64_t offset, std::vector<uint64_t>& dst) {
   Tile tile = read_tile(reader, offset);
   Deserializer dser(tile.data_.data(), tile.data_.size());
 
@@ -212,8 +250,11 @@ FragmentMetadata::load_offsets(Reader& reader, uint64_t offset, std::vector<uint
   dser.read(&dst[0], size);
 }
 
-void
-FragmentMetadata::load_values(Reader& reader, uint64_t offset, std::vector<uint8_t>& data, std::vector<uint8_t>& var_data) {
+void FragmentMetadata::load_values(
+    Reader& reader,
+    uint64_t offset,
+    std::vector<uint8_t>& data,
+    std::vector<uint8_t>& var_data) {
   Tile tile = read_tile(reader, offset);
   Deserializer dser(tile.data_.data(), tile.data_.size());
 
@@ -229,8 +270,8 @@ FragmentMetadata::load_values(Reader& reader, uint64_t offset, std::vector<uint8
   }
 }
 
-void
-FragmentMetadata::load_sums(Reader& reader, uint64_t offset, std::vector<uint8_t>& sums) {
+void FragmentMetadata::load_sums(
+    Reader& reader, uint64_t offset, std::vector<uint8_t>& sums) {
   Tile tile = read_tile(reader, offset);
   Deserializer dser(tile.data_.data(), tile.data_.size());
 
@@ -239,8 +280,8 @@ FragmentMetadata::load_sums(Reader& reader, uint64_t offset, std::vector<uint8_t
   dser.read(&sums[0], size);
 }
 
-void
-FragmentMetadata::load_null_counts(Reader& reader, uint64_t offset, std::vector<uint64_t>& null_counts) {
+void FragmentMetadata::load_null_counts(
+    Reader& reader, uint64_t offset, std::vector<uint64_t>& null_counts) {
   Tile tile = read_tile(reader, offset);
   Deserializer dser(tile.data_.data(), tile.data_.size());
 
@@ -251,8 +292,8 @@ FragmentMetadata::load_null_counts(Reader& reader, uint64_t offset, std::vector<
   dser.read(&null_counts[0], size);
 }
 
-void
-FragmentMetadata::load_fragment_min_max_sum_null_count(Reader& reader, uint64_t offset) {
+void FragmentMetadata::load_fragment_min_max_sum_null_count(
+    Reader& reader, uint64_t offset) {
   Tile tile = read_tile(reader, offset);
   Deserializer dser(tile.data_.data(), tile.data_.size());
 
@@ -270,8 +311,7 @@ FragmentMetadata::load_fragment_min_max_sum_null_count(Reader& reader, uint64_t 
   }
 }
 
-void
-FragmentMetadata::dump() {
+void FragmentMetadata::dump() {
   footer_.dump();
 
   fprintf(stderr, "RTree Tile:\n");
@@ -303,7 +343,8 @@ FragmentMetadata::dump() {
 
   fprintf(stderr, "Tile Validity Offsets:\n");
   for (size_t i = 0; i < tile_validity_offsets_.size(); i++) {
-    fprintf(stderr, "    %zu: %zu offsets\n", i, tile_validity_offsets_[i].size());
+    fprintf(
+        stderr, "    %zu: %zu offsets\n", i, tile_validity_offsets_[i].size());
     for (auto& offset : tile_validity_offsets_[i]) {
       fprintf(stderr, "        %llu\n", offset);
     }
@@ -311,12 +352,22 @@ FragmentMetadata::dump() {
 
   fprintf(stderr, "Tile Min Values:\n");
   for (size_t i = 0; i < tile_min_.size(); i++) {
-    fprintf(stderr, "    %zu: %zu data bytes, %zu var data bytes\n", i, tile_min_[i].size(), tile_min_var_[i].size());
+    fprintf(
+        stderr,
+        "    %zu: %zu data bytes, %zu var data bytes\n",
+        i,
+        tile_min_[i].size(),
+        tile_min_var_[i].size());
   }
 
   fprintf(stderr, "Tile Max Values:\n");
   for (size_t i = 0; i < tile_max_.size(); i++) {
-    fprintf(stderr, "    %zu: %zu data bytes, %zu var data bytes\n", i, tile_max_[i].size(), tile_max_var_[i].size());
+    fprintf(
+        stderr,
+        "    %zu: %zu data bytes, %zu var data bytes\n",
+        i,
+        tile_max_[i].size(),
+        tile_max_var_[i].size());
   }
 
   fprintf(stderr, "Tile Sums:\n");
@@ -326,7 +377,8 @@ FragmentMetadata::dump() {
 
   fprintf(stderr, "Tile Null Counts:\n");
   for (size_t i = 0; i < tile_null_count_.size(); i++) {
-    fprintf(stderr, "    %zu: %lu null counts\n", i, tile_null_count_[i].size());
+    fprintf(
+        stderr, "    %zu: %lu null counts\n", i, tile_null_count_[i].size());
     for (auto& null_count : tile_null_count_[i]) {
       fprintf(stderr, "        %llu\n", null_count);
     }

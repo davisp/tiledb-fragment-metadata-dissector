@@ -26,7 +26,8 @@ struct GenericTileOffsets {
 struct Footer {
   Footer(Reader& reader, size_t nfields);
 
-  void load_tile_offsets(Reader& reader, uint64_t offset, std::vector<uint64_t>& dst);
+  void load_tile_offsets(
+      Reader& reader, uint64_t offset, std::vector<uint64_t>& dst);
 
   void dump();
 
@@ -53,10 +54,16 @@ struct Footer {
 struct FragmentMetadata {
   FragmentMetadata(Reader& reader, size_t nfields);
 
-  void load_offsets(Reader& reader, uint64_t offset, std::vector<uint64_t>& dst);
-  void load_values(Reader& reader, uint64_t offset, std::vector<uint8_t>& data, std::vector<uint8_t>& var_data);
+  void load_offsets(
+      Reader& reader, uint64_t offset, std::vector<uint64_t>& dst);
+  void load_values(
+      Reader& reader,
+      uint64_t offset,
+      std::vector<uint8_t>& data,
+      std::vector<uint8_t>& var_data);
   void load_sums(Reader& reader, uint64_t offset, std::vector<uint8_t>& sums);
-  void load_null_counts(Reader& reader, uint64_t offset, std::vector<uint64_t>& null_counts);
+  void load_null_counts(
+      Reader& reader, uint64_t offset, std::vector<uint64_t>& null_counts);
   void load_fragment_min_max_sum_null_count(Reader& reader, uint64_t offset);
 
   void dump();

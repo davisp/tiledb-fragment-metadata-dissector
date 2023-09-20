@@ -52,11 +52,15 @@ DiskLayout::DiskLayout()
     , filtered_data_(nullptr) {
 }
 
-void
-DiskLayout::dump() {
+void DiskLayout::dump() {
   fprintf(stderr, "    DiskLayout\n");
-  fprintf(stderr, "        Unfiltered data: %u bytes at %llu offset\n", unfiltered_data_size_, unfiltered_data_offset_);
-  fprintf(stderr, "        Filtered Metadata: %u bytes\n", filtered_metadata_size_);
+  fprintf(
+      stderr,
+      "        Unfiltered data: %u bytes at %llu offset\n",
+      unfiltered_data_size_,
+      unfiltered_data_offset_);
+  fprintf(
+      stderr, "        Filtered Metadata: %u bytes\n", filtered_metadata_size_);
   fprintf(stderr, "        Filtered Data: %u bytes\n", filtered_data_size_);
 }
 
@@ -66,7 +70,7 @@ ChunkData::ChunkData(uint8_t* buf, size_t nbytes) {
 
   filtered_chunks_.resize(num_chunks);
 
-  //fprintf(stderr, "Loading %llu chunks.\n", num_chunks);
+  // fprintf(stderr, "Loading %llu chunks.\n", num_chunks);
 
   orig_size = 0;
   for (uint64_t i = 0; i < num_chunks; i++) {
@@ -86,8 +90,7 @@ ChunkData::ChunkData(uint8_t* buf, size_t nbytes) {
   }
 }
 
-void
-ChunkData::dump() {
+void ChunkData::dump() {
   fprintf(stderr, "ChunkData:\n");
   fprintf(stderr, "    NumChunks: %zu\n", filtered_chunks_.size());
   for (auto& chunk : filtered_chunks_) {
@@ -95,8 +98,7 @@ ChunkData::dump() {
   }
 }
 
-void
-Header::dump() {
+void Header::dump() {
   fprintf(stderr, "Tile Header:\n");
   fprintf(stderr, "    Version: %u\n", version);
   fprintf(stderr, "    Persisted Size: %llu\n", persisted_size);
@@ -134,10 +136,11 @@ Header read_header(Reader& reader, uint64_t offset) {
 }
 
 Tile read_tile(Reader& reader, uint64_t offset) {
-  //fprintf(stderr, "Reading tile at offset: %llu\n", offset);
+  // fprintf(stderr, "Reading tile at offset: %llu\n", offset);
 
   auto header = read_header(reader, offset);
-  uint64_t data_offset = offset + Header::BASE_SIZE + header.filter_pipeline_size;
+  uint64_t data_offset =
+      offset + Header::BASE_SIZE + header.filter_pipeline_size;
 
   std::vector<uint8_t> raw_tile_data(header.persisted_size);
   reader.read(raw_tile_data.data(), raw_tile_data.size(), data_offset);
@@ -150,10 +153,7 @@ Tile read_tile(Reader& reader, uint64_t offset) {
   }
 
   Tile tile(
-      header.version,
-      header.datatype,
-      header.cell_size,
-      header.tile_size);
+      header.version, header.datatype, header.cell_size, header.tile_size);
 
   for (size_t i = 0; i < chunks.size(); i++) {
     auto& chunk = chunks.filtered_chunks_[i];

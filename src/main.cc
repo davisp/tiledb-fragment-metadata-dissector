@@ -8,9 +8,7 @@
 // Hard coded values from the array schema
 #define NUM_FIELDS 15
 
-int
-main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
   if (argc != 2) {
     fprintf(stderr, "usage: %s FRAGMENT_METADATA_FILE\n", argv[0]);
     exit(1);

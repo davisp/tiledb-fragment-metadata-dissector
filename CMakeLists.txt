@@ -33,6 +33,8 @@ file(GLOB_RECURSE
   RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   include/*.h
   src/*.cc)
+list(SORT FORMAT_SOURCES)
 add_custom_target(format
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  clang-format -i ${FORMAT_SOURCES})
+  COMMAND_EXPAND_LISTS
+  COMMAND clang-format --verbose -i ${FORMAT_SOURCES})

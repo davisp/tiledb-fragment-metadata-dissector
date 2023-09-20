@@ -19,10 +19,8 @@ Reader::Reader(const char* filename) {
   read_map_.resize(file_size_, 0);
 }
 
-void
-Reader::read(void* buf, size_t nbytes, size_t offset)
-{
-  //fprintf(stderr, "Reading %lu bytes at %zu offset.\n", nbytes, offset);
+void Reader::read(void* buf, size_t nbytes, size_t offset) {
+  // fprintf(stderr, "Reading %lu bytes at %zu offset.\n", nbytes, offset);
 
   auto nread = pread(fd_, buf, nbytes, offset);
   if (nread < 0) {
@@ -31,8 +29,9 @@ Reader::read(void* buf, size_t nbytes, size_t offset)
   }
 
   if (nread != nbytes) {
-    auto fmt = "Read failed: Expected %ld bytes, "
-      "but read %ld bytes\n";
+    auto fmt =
+        "Read failed: Expected %ld bytes, "
+        "but read %ld bytes\n";
     fprintf(stderr, fmt, nbytes, nread);
     exit(2);
   }
@@ -42,8 +41,7 @@ Reader::read(void* buf, size_t nbytes, size_t offset)
   }
 }
 
-void
-Reader::show_read_report() {
+void Reader::show_read_report() {
   bool found_hole = false;
   for (size_t i = 0; i < read_map_.size(); i++) {
     if (read_map_[i] > 0) {

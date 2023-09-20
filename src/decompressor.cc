@@ -4,8 +4,8 @@
 #include "decompressor.h"
 #include "deserializer.h"
 
-void
-decompress_part(uint8_t* src, size_t src_nbytes, uint8_t* dst, size_t dst_nbytes) {
+void decompress_part(
+    uint8_t* src, size_t src_nbytes, uint8_t* dst, size_t dst_nbytes) {
   z_stream strm;
   strm.zalloc = Z_NULL;
   strm.zfree = Z_NULL;
@@ -31,15 +31,13 @@ decompress_part(uint8_t* src, size_t src_nbytes, uint8_t* dst, size_t dst_nbytes
   (void)inflateEnd(&strm);
 }
 
-
-void
-tdb_decompress(DiskLayout& layout, uint8_t* buf, size_t nbytes)
-{
+void tdb_decompress(DiskLayout& layout, uint8_t* buf, size_t nbytes) {
   Deserializer dser(layout.filtered_metadata_, layout.filtered_metadata_size_);
   auto num_metadata_parts = dser.read<uint32_t>();
   auto num_data_parts = dser.read<uint32_t>();
 
-  //fprintf(stderr, "Decompression %d metadata parts, %d data parts.\n", num_metadata_parts, num_data_parts);
+  // fprintf(stderr, "Decompression %d metadata parts, %d data parts.\n",
+  // num_metadata_parts, num_data_parts);
 
   if (num_metadata_parts != 0) {
     fprintf(stderr, "Found metadata parts in gzip decompressor.");
@@ -68,7 +66,8 @@ tdb_decompress(DiskLayout& layout, uint8_t* buf, size_t nbytes)
       exit(2);
     }
 
-    //fprintf(stderr, "Decompressing data chunk from %u to %u bytes.\n", compressed_size, uncompressed_size);
+    // fprintf(stderr, "Decompressing data chunk from %u to %u bytes.\n",
+    // compressed_size, uncompressed_size);
     decompress_part(curr_src, compressed_size, curr_dst, uncompressed_size);
   }
 }

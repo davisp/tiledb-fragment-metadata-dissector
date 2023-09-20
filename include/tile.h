@@ -19,7 +19,8 @@ struct DiskLayout {
 };
 
 struct Tile {
-  Tile() {}
+  Tile() {
+  }
 
   Tile(uint32_t version, uint8_t datatype, uint64_t cell_size, size_t data_size)
       : version_(version)
