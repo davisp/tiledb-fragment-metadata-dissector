@@ -14,17 +14,16 @@ set(SOURCES
   src/fragment_metadata.cc
   src/main.cc
   src/reader.cc
+  src/s3.cc
   src/tile.cc)
 
-find_package(aws-cpp-sdk-core REQUIRED)
+find_package(AWSSDK REQUIRED COMPONENTS s3)
 find_package(ZLIB REQUIRED)
 
 add_executable(fmd ${SOURCES})
 
 target_include_directories(fmd PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_include_directories(fmd PRIVATE aws-cpp-sdk-core)
-
-target_link_libraries(fmd PRIVATE aws-cpp-sdk-core)
+target_link_libraries(fmd PRIVATE ${AWSSDK_LINK_LIBRARIES})
 target_link_libraries(fmd PRIVATE ZLIB::ZLIB)
 
 file(GLOB_RECURSE

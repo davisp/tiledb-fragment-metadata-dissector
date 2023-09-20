@@ -6,36 +6,68 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <iostream>
+#include <sstream>
+
 #include "reader.h"
 
-Reader::Reader(const char* filename) {
-  fd_ = ::open(filename, O_RDONLY);
-  if (fd_ < 0) {
-    fprintf(stderr, "Error opening '%s': %s", filename, strerror(errno));
-    exit(2);
+struct Fd {
+  Fd(const char* filename) {
+    fd_ = ::open(filename, O_RDONLY);
+    if (fd_ < 0) {
+      std::stringstream ss;
+      ss << "Error opening '" << filename << "' : " << strerror(errno);
+      throw std::runtime_error(ss.str());
+    }
   }
 
-  file_size_ = lseek(fd_, 0, SEEK_END);
-  read_map_.resize(file_size_, 0);
+  ~Fd() {
+    if (fd_ >= 0) {
+      ::close(fd_);
+    }
+  }
+
+  int fd_;
+};
+
+Reader::Reader(const char* filename) {
+  Fd fd(filename);
+
+  auto size = lseek(fd.fd_, 0, SEEK_END);
+  data_.resize(size);
+
+  auto nread = ::pread(fd.fd_, data_.data(), size, 0);
+  if (nread < 0) {
+    throw std::runtime_error(std::string("Error in pread: ") + strerror(errno));
+  }
+
+  if (nread != size) {
+    std::stringstream ss;
+    ss << "Read failed: Expected " << size << " bytes, ";
+    ss << "but read " << nread << "bytes.";
+    throw std::runtime_error(ss.str());
+  }
+
+  std::cerr << "Read " << nread << " bytes." << std::endl;
+
+  read_map_.resize(size, 0);
+}
+
+Reader::Reader(const std::vector<uint8_t> data)
+    : data_(data)
+    , read_map_(data_.size(), 0) {
+}
+
+size_t Reader::size() {
+  return data_.size();
 }
 
 void Reader::read(void* buf, size_t nbytes, size_t offset) {
-  // fprintf(stderr, "Reading %lu bytes at %zu offset.\n", nbytes, offset);
-
-  auto nread = pread(fd_, buf, nbytes, offset);
-  if (nread < 0) {
-    fprintf(stderr, "Error in pread: %s\n", strerror(errno));
-    exit(2);
+  if (nbytes + offset > data_.size()) {
+    throw std::runtime_error("Error reading past end of file.");
   }
 
-  if (nread != nbytes) {
-    auto fmt =
-        "Read failed: Expected %ld bytes, "
-        "but read %ld bytes\n";
-    fprintf(stderr, fmt, nbytes, nread);
-    exit(2);
-  }
-
+  std::memcpy(buf, data_.data() + offset, nbytes);
   for (size_t i = offset; i < offset + nbytes; i++) {
     read_map_[i] += 1;
   }

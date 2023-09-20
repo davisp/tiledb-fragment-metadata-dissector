@@ -29,8 +29,8 @@ Footer::Footer(Reader& reader, size_t nfields)
     , file_var_sizes_(nfields)
     , file_validity_sizes_(nfields)
     , gt_offsets_(nfields) {
-  reader.read(&footer_size_, 8, reader.file_size_ - 8);
-  footer_offset_ = reader.file_size_ - footer_size_ - 8;
+  reader.read(&footer_size_, 8, reader.size() - 8);
+  footer_offset_ = reader.size() - footer_size_ - 8;
 
   std::vector<uint8_t> footer_blob(footer_size_);
   reader.read(footer_blob.data(), footer_size_, footer_offset_);
