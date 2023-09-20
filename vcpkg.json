@@ -1,11 +1,12 @@
 {
   "name": "fmd",
-  "version": "0.0.0",
+  "version-string": "0.0.0",
+  "builtin-baseline": "22fd3b5c3bef2d9f8076778f02584d96b1a3293c",
   "dependencies": [
       {
         "name": "aws-sdk-cpp",
-        "version>=": "1.8.84",
-        "features": ["s3", "identity-management", "sts"],
+        "version>=": "1.8.126#10",
+        "features": ["s3"],
         "default-features": false
       },
       "zlib"
