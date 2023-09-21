@@ -8,6 +8,7 @@
 
 std::string add_front_slash(const std::string& path);
 std::string remove_front_slash(const std::string& path);
+std::string add_trailing_slash(const std::string& path);
 std::string remove_trailing_slash(const std::string& path);
 
 template <typename R, typename E>
@@ -51,7 +52,7 @@ S3::S3() {
 }
 
 std::vector<S3Entry> S3::ls(const std::string& uri) {
-  auto s3_uri = remove_trailing_slash(uri);
+  auto s3_uri = add_trailing_slash(uri);
   Aws::Http::URI aws_uri = s3_uri.c_str();
 
   std::string bucket = aws_uri.GetAuthority().c_str();
@@ -103,7 +104,7 @@ std::vector<S3Entry> S3::ls(const std::string& uri) {
 }
 
 std::vector<uint8_t> S3::read(
-    const std::string& uri, size_t offset, size_t nbytes) {
+    const std::string& uri, size_t nbytes, size_t offset) {
   Aws::Http::URI aws_uri = uri.c_str();
 
   auto range = "bytes=" + std::to_string(offset) + "-" +
@@ -152,9 +153,17 @@ std::string remove_front_slash(const std::string& path) {
   }
 }
 
+std::string add_trailing_slash(const std::string& path) {
+  if (path.back() == '/') {
+    return path;
+  } else {
+    return path + "/";
+  }
+}
+
 std::string remove_trailing_slash(const std::string& path) {
   if (path.back() == '/') {
-    return path.substr(1, path.size() - 1);
+    return path.substr(0, path.size() - 1);
   } else {
     return path;
   }

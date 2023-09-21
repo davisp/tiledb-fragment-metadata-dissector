@@ -25,7 +25,8 @@ GenericTileOffsets::GenericTileOffsets(size_t nfields)
 }
 
 Footer::Footer(Reader& reader, size_t nfields)
-    : file_sizes_(nfields)
+    : fragment_metadata_file_size_(reader.size())
+    , file_sizes_(nfields)
     , file_var_sizes_(nfields)
     , file_validity_sizes_(nfields)
     , gt_offsets_(nfields) {

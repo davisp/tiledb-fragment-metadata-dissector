@@ -5,19 +5,6 @@
 #include "reader.h"
 #include "tile.h"
 
-struct ChunkData {
-  ChunkData(uint8_t* buf, size_t nbytes);
-
-  size_t size() {
-    return filtered_chunks_.size();
-  }
-
-  void dump();
-
-  std::vector<DiskLayout> filtered_chunks_;
-  uint64_t orig_size;
-};
-
 struct Header {
   static const uint64_t BASE_SIZE =
       3 * sizeof(uint64_t) + 2 * sizeof(char) + 2 * sizeof(uint32_t);
@@ -72,11 +59,11 @@ ChunkData::ChunkData(uint8_t* buf, size_t nbytes) {
 
   // fprintf(stderr, "Loading %llu chunks.\n", num_chunks);
 
-  orig_size = 0;
+  orig_size_ = 0;
   for (uint64_t i = 0; i < num_chunks; i++) {
     auto& chunk = filtered_chunks_[i];
     chunk.unfiltered_data_size_ = deserializer.read<uint32_t>();
-    chunk.unfiltered_data_offset_ = orig_size;
+    chunk.unfiltered_data_offset_ = orig_size_;
     chunk.filtered_data_size_ = deserializer.read<uint32_t>();
     chunk.filtered_metadata_size_ = deserializer.read<uint32_t>();
 
@@ -86,7 +73,7 @@ ChunkData::ChunkData(uint8_t* buf, size_t nbytes) {
     chunk.filtered_data_ = const_cast<uint8_t*>(
         deserializer.get_ptr<uint8_t>(chunk.filtered_data_size_));
 
-    orig_size += chunk.unfiltered_data_size_;
+    orig_size_ += chunk.unfiltered_data_size_;
   }
 }
 
@@ -147,7 +134,7 @@ Tile read_tile(Reader& reader, uint64_t offset) {
 
   ChunkData chunks(raw_tile_data.data(), raw_tile_data.size());
 
-  if (chunks.orig_size != header.tile_size) {
+  if (chunks.orig_size_ != header.tile_size) {
     fprintf(stderr, "Error deserializing tile, header size mismatch.");
     exit(2);
   }

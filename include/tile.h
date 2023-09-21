@@ -18,6 +18,19 @@ struct DiskLayout {
   uint8_t* filtered_data_;
 };
 
+struct ChunkData {
+  ChunkData(uint8_t* buf, size_t nbytes);
+
+  size_t size() {
+    return filtered_chunks_.size();
+  }
+
+  void dump();
+
+  std::vector<DiskLayout> filtered_chunks_;
+  uint64_t orig_size_;
+};
+
 struct Tile {
   Tile() {
   }

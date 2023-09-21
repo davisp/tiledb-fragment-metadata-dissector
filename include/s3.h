@@ -11,6 +11,9 @@ struct S3Initializer {
 };
 
 struct S3Entry {
+  S3Entry() {
+  }
+
   S3Entry(const std::string& uri, uint64_t size, bool is_dir)
       : uri_(uri)
       , size_(size)
