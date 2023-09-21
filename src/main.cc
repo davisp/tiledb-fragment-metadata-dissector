@@ -195,7 +195,7 @@ verify_last_tile(S3& s3, const Schema& schema, const FragmentMetadata& fmd, cons
   ChunkData chunks(data.data(), data.size());
 
   if (chunks.orig_size_ != expected_size) {
-    std::cerr << "INVALID: " << entry.uri_ << std::endl;
+    std::cerr << "INVALID:" << std::endl;
     std::cerr << "    Expected:       " << expected_size << " bytes" << std::endl;
     std::cerr << "    Last Tile Size: " << chunks.orig_size_ << " bytes" <<std::endl;
   }
